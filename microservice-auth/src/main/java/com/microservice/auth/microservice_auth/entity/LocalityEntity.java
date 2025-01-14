@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,19 +20,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "roles")
-public class RoleEntity extends AuditEntity{
+@Table(name = "localidades")
+public class LocalityEntity extends AuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre")
-    private String username;
+    @Column(name = "nombre", length = 500)
+    private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_id")
-    private StateEntity state;
-
-
+    @JoinColumn(name = "ciudad_id")
+    private CityEntity city; 
 }

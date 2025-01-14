@@ -19,19 +19,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "roles")
-public class RoleEntity extends AuditEntity{
+@Table(name = "aplicaciones")
+public class ApplicationEntity extends AuditEntity{
 
-    @Id
+        @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre")
-    private String username;
+    @Column(name = "nombre")     
+    private String name;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "grupo_aplicacion_id")
+    private ApplicationGroupEntity applicationGroupEntity;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_id")
     private StateEntity state;
 
-
 }
+ 

@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.microservice.auth.microservice_auth.controller.request.CreateUserDTO;
-import com.microservice.auth.microservice_auth.entity.ERole;
-import com.microservice.auth.microservice_auth.entity.RoleEntity;
+import com.microservice.auth.microservice_auth.entity.ProfileEntity;
 import com.microservice.auth.microservice_auth.entity.UserEntity;
+import com.microservice.auth.microservice_auth.repository.CompanyRepository;
+import com.microservice.auth.microservice_auth.repository.ProfileRepository;
 import com.microservice.auth.microservice_auth.repository.UserRepository;
 
 import jakarta.validation.Valid;
@@ -30,6 +31,12 @@ public class PrincipalController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
+
     @GetMapping("/test")
     public String hello() {
         return "== TODO FUNCIONANDO CORRECTAMENTE ==";
@@ -42,20 +49,24 @@ public class PrincipalController {
 
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
-
-        Set<RoleEntity> roles = createUserDTO.getRoles().stream()
-                    .map(role -> RoleEntity.builder()
-                                            .name(ERole.valueOf(role))
-                                            .build())
-                    .collect(Collectors.toSet());
         
-        UserEntity userEntity = UserEntity.builder()
-                                            .username(createUserDTO.getUsername())
-                                            .password(passwordEncoder.encode(createUserDTO.getPassword()))
-                                            .email(createUserDTO.getEmail())
-                                            .roles(roles)
-                                            .build();
+        // Obtener los roles desde la base de datos usando los IDs proporcionados en el DTO
+        Set<ProfileEntity> profiles = createUserDTO.getProfiles().stream()
+                .map(profileId -> profileRepository.findById(profileId)
+                        .orElseThrow(() -> new RuntimeException("Profile ID " + profileId + " not found")))
+                .collect(Collectors.toSet());
 
+        // Crear la entidad de usuario
+        UserEntity userEntity = UserEntity.builder()
+                .document(createUserDTO.getUsername())
+                .username(createUserDTO.getUsername())
+                .password(passwordEncoder.encode(createUserDTO.getPassword()))
+                .company(companyRepository.findById(createUserDTO.getCompanyId()).get())
+                .firstName(createUserDTO.getFirstName())
+                .profiles(profiles)
+                .build();
+                
+        // Guardar el usuario en la base de datos
         userRepository.save(userEntity);
 
         return ResponseEntity.ok(userEntity);

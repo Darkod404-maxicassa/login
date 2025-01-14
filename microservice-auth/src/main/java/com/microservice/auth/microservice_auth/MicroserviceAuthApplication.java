@@ -1,18 +1,17 @@
 package com.microservice.auth.microservice_auth;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.microservice.auth.microservice_auth.entity.ERole;
-import com.microservice.auth.microservice_auth.entity.RoleEntity;
-import com.microservice.auth.microservice_auth.entity.UserEntity;
-import com.microservice.auth.microservice_auth.repository.UserRepository;
+import com.microservice.auth.microservice_auth.entity.CompanyEntity;
+import com.microservice.auth.microservice_auth.entity.ProfileEntity;
+import com.microservice.auth.microservice_auth.repository.CompanyRepository;
+import com.microservice.auth.microservice_auth.repository.ProfileRepository;
 
 @SpringBootApplication
 public class MicroserviceAuthApplication {
@@ -21,55 +20,65 @@ public class MicroserviceAuthApplication {
 		SpringApplication.run(MicroserviceAuthApplication.class, args);
 	}
 
-	@Autowired
-	UserRepository userRepository;
+	@Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*") //URLS
+                        .allowedMethods("*")
+                        .allowedHeaders("*");
+            }
+        };
+    }
 
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	private ProfileRepository profileRepository;
+
+	@Autowired
+    private CompanyRepository companyRepository;
 
 	@Bean
 	CommandLineRunner init(){
 
 		return args -> {
 
-			UserEntity userEntity = UserEntity.builder()
-				.email("elsanti@gmail.com")
-				.username("elsanti")
-				.password(passwordEncoder.encode("1234"))
-				.camello("Hola")
-				.roles(Set.of(RoleEntity.builder()
-							.name(ERole.valueOf(ERole.ADMIN.name()))
-							.build()))
+			ProfileEntity profileEntity = ProfileEntity.builder()
+				.name("USER")
 				.build();
 
-			UserEntity userEntity2 = UserEntity.builder()
-				.email("elsanti2@gmail.com")
-				.username("elsanti2")
-				.password(passwordEncoder.encode("1234"))
-				.camello("Hola")
-				.roles(Set.of(RoleEntity.builder()
-							.name(ERole.valueOf(ERole.USER.name()))
-							.build()))
+			profileRepository.save(profileEntity);
+
+			profileEntity = ProfileEntity.builder()
+				.name("ADMIN")
 				.build();
 
+			profileRepository.save(profileEntity);
 
-			UserEntity userEntity3 = UserEntity.builder()
-				.email("elsanti3@gmail.com")
-				.username("elsanti3")
-				.password(passwordEncoder.encode("1234"))
-				.camello("Hola")
-				.roles(Set.of(RoleEntity.builder()
-							.name(ERole.valueOf(ERole.INVITED.name()))
-							.build()))
+			profileEntity = ProfileEntity.builder()
+				.name("SUPERADMIN")
 				.build();
 
+			profileRepository.save(profileEntity);
 
-			userRepository.save(userEntity);
-			userRepository.save(userEntity2);
-			userRepository.save(userEntity3);
+			CompanyEntity companyEntity = CompanyEntity.builder()
+				.name("PEGOMAX")
+				
+				.build();
+			
+			companyRepository.save(companyEntity);	
+
+			companyEntity = CompanyEntity.builder()
+				.name("TUCASSA")
+				.build();
+			
+			companyRepository.save(companyEntity);
 
 		};
 
 	}
+
+	
 
 }

@@ -22,23 +22,24 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        
-        UserEntity userEntity = userRepository.findByUsername(username)
-                                                .orElseThrow(() -> new UsernameNotFoundException("El usuario " + username + " no existe."));
+public UserDetails loadUserByUsername(String documnent) throws UsernameNotFoundException {
+    
+    UserEntity userEntity = userRepository.findByUsername(documnent)
+                                           .orElseThrow(() -> new UsernameNotFoundException("El usuario " + documnent + " no existe."));
 
-        Collection<? extends GrantedAuthority> authorities = userEntity.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE _".concat(role.getName().name())))
-                .collect(Collectors.toSet());
+    // Si userEntity.getRole() devuelve directamente una lista de nombres de roles
+    Collection<? extends GrantedAuthority> authorities = userEntity.getProfiles()
+            .stream()
+            .map(roleName -> new SimpleGrantedAuthority("ROLE_".concat(roleName.getName())))
+            .collect(Collectors.toSet());
 
-        return new User(userEntity.getUsername(),
-                        userEntity.getPassword(),
-                        true,
-                        true,
-                        true,
-                        true,
-                        authorities);
-    }
+    return new User(userEntity.getUsername(),
+                    userEntity.getPassword(),
+                    true, // accountNonExpired
+                    true, // credentialsNonExpired
+                    true, // accountNonLocked
+                    true, // enabled
+                    authorities);
+}
 
 }
