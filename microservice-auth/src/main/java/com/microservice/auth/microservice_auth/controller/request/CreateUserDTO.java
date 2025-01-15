@@ -20,7 +20,7 @@ public class CreateUserDTO {
 
     private Long companyId;
 
-    private Set<Long> profiles;
+    private Long profile;
 
     private String firstName;
 

@@ -102,9 +102,10 @@ public class UserEntity {
     @JoinColumn(name = "company_id")
     private CompanyEntity company;
 
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = ProfileEntity.class, cascade =  CascadeType.PERSIST)
-    @JoinTable(name = "usuarios_perfiles", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "perfil_id"))
-    private Set<ProfileEntity> profiles; 
+    @ManyToOne(fetch = FetchType.EAGER)
+    //@JoinTable(name = "usuarios_perfiles", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "perfil_id"))
+    @JoinColumn(name = "perfil_id")
+    private ProfileEntity profile; 
 
 
 }

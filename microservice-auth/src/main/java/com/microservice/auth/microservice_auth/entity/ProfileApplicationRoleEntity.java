@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "perfiles_aplicaciones_roles")
-public class ProfileApplicationRoleEntity extends AuditEntity{
+public class ProfileApplicationRoleEntity extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

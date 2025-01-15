@@ -31,7 +31,7 @@ public class ApplicationEntity extends AuditEntity{
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "grupo_aplicacion_id")
-    private ApplicationGroupEntity applicationGroupEntity;
+    private ApplicationGroupEntity applicationGroup;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_id")

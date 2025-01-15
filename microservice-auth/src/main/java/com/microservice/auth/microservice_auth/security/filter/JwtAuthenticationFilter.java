@@ -99,6 +99,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservice.auth.microservice_auth.entity.UserEntity;
+import com.microservice.auth.microservice_auth.repository.ProfileApplicationRoleRepository;
 import com.microservice.auth.microservice_auth.repository.UserRepository;
 import com.microservice.auth.microservice_auth.security.jwt.JwtUtils;
 
@@ -111,6 +112,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private ProfileApplicationRoleRepository profileApplicationRoleRepository;
 
     public JwtAuthenticationFilter(JwtUtils jwtUtils, UserRepository userRepository) {
         this.jwtUtils = jwtUtils;
@@ -138,30 +140,42 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         try {
-            // Obtener el usuario autenticado
+  
             User user = (User) authResult.getPrincipal();
 
-            // Generar el token JWT
+
             String token = jwtUtils.generatedAccesToken(user.getUsername());
 
-            // Buscar el usuario en la base de datos
             UserEntity userEntity = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Extraer datos de la empresa
             Map<String, Object> companyData = new HashMap<>();
             if (userEntity.getCompany() != null) {
                 companyData.put("id", userEntity.getCompany().getId());
                 companyData.put("name", userEntity.getCompany().getName());
             }
 
-            // Construir respuesta JSON
+            Map<String, Object> profileData = new HashMap<>();
+            if (userEntity.getCompany() != null) {
+                profileData.put("id", userEntity.getProfile().getId());
+                profileData.put("name", userEntity.getProfile().getName());
+            }
+
+
+            //System.out.println(profileApplicationRoleRepository.findApplicationsAndRolesByProfileId(userEntity.getProfile().getId()));
+
+
+
             Map<String, Object> httpResponse = new HashMap<>();
+            
             httpResponse.put("token", token);
-            httpResponse.put("message", "Autenticación Correcta");
+            
             httpResponse.put("username", user.getUsername());
-            httpResponse.put("firstName", userEntity.getFirstName()); // Agregar el primer nombre del usuario
+            httpResponse.put("firstName", userEntity.getFirstName());            
             httpResponse.put("company", companyData);
+
+            httpResponse.put("Profile", profileData);
+            httpResponse.put("Accesos", profileData);
 
             // Configurar la respuesta HTTP
             response.setStatus(HttpStatus.OK.value());

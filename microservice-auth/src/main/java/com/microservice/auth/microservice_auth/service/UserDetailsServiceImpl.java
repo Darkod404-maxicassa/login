@@ -1,6 +1,7 @@
 package com.microservice.auth.microservice_auth.service;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,34 +13,44 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.microservice.auth.microservice_auth.entity.ProfileEntity;
 import com.microservice.auth.microservice_auth.entity.UserEntity;
 import com.microservice.auth.microservice_auth.repository.UserRepository;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService{
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
-public UserDetails loadUserByUsername(String documnent) throws UsernameNotFoundException {
-    
-    UserEntity userEntity = userRepository.findByUsername(documnent)
-                                           .orElseThrow(() -> new UsernameNotFoundException("El usuario " + documnent + " no existe."));
+    public UserDetails loadUserByUsername(String document) throws UsernameNotFoundException {
+        
+        // Buscar al usuario por su documento
+        UserEntity userEntity = userRepository.findByUsername(document)
+                .orElseThrow(() -> new UsernameNotFoundException("El usuario " + document + " no existe."));
 
-    // Si userEntity.getRole() devuelve directamente una lista de nombres de roles
-    Collection<? extends GrantedAuthority> authorities = userEntity.getProfiles()
-            .stream()
-            .map(roleName -> new SimpleGrantedAuthority("ROLE_".concat(roleName.getName())))
-            .collect(Collectors.toSet());
+        // Obtener el perfil asociado al usuario
+        ProfileEntity profile = userEntity.getProfile();
 
-    return new User(userEntity.getUsername(),
-                    userEntity.getPassword(),
-                    true, // accountNonExpired
-                    true, // credentialsNonExpired
-                    true, // accountNonLocked
-                    true, // enabled
-                    authorities);
-}
+        if (profile == null) {
+            throw new UsernameNotFoundException("El usuario " + document + " no tiene un perfil asociado.");
+        }
 
+        // Crear las autoridades con el perfil del usuario
+        Collection<? extends GrantedAuthority> authorities = Set.of(
+                new SimpleGrantedAuthority("ROLE_".concat(profile.getName()))
+        );
+
+        // Crear y retornar el objeto UserDetails
+        return new User(
+                userEntity.getUsername(),
+                userEntity.getPassword(),
+                true,  // accountNonExpired
+                true,  // credentialsNonExpired
+                true,  // accountNonLocked
+                true,  // enabled
+                authorities
+        );
+    }
 }

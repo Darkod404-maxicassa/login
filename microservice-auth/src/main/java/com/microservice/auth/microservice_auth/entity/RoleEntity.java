@@ -27,7 +27,7 @@ public class RoleEntity extends AuditEntity{
     private Long id;
 
     @Column(name = "nombre")
-    private String username;
+    private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_id")

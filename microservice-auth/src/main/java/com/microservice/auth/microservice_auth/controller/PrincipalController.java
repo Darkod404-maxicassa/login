@@ -1,11 +1,9 @@
 package com.microservice.auth.microservice_auth.controller;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +21,7 @@ import com.microservice.auth.microservice_auth.repository.UserRepository;
 import jakarta.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class PrincipalController {
 
     @Autowired
@@ -50,11 +49,9 @@ public class PrincipalController {
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         
-        // Obtener los roles desde la base de datos usando los IDs proporcionados en el DTO
-        Set<ProfileEntity> profiles = createUserDTO.getProfiles().stream()
-                .map(profileId -> profileRepository.findById(profileId)
-                        .orElseThrow(() -> new RuntimeException("Profile ID " + profileId + " not found")))
-                .collect(Collectors.toSet());
+        Long profileId = createUserDTO.getProfile(); // Assuming getProfile() returns a single Long
+        ProfileEntity profile = profileRepository.findById(profileId)
+        .orElseThrow(() -> new RuntimeException("Profile ID " + profileId + " not found"));
 
         // Crear la entidad de usuario
         UserEntity userEntity = UserEntity.builder()
@@ -63,7 +60,7 @@ public class PrincipalController {
                 .password(passwordEncoder.encode(createUserDTO.getPassword()))
                 .company(companyRepository.findById(createUserDTO.getCompanyId()).get())
                 .firstName(createUserDTO.getFirstName())
-                .profiles(profiles)
+                .profile(profile)
                 .build();
                 
         // Guardar el usuario en la base de datos
