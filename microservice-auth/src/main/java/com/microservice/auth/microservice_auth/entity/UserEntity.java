@@ -1,10 +1,13 @@
 package com.microservice.auth.microservice_auth.entity;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microservice.auth.microservice_auth.entity.models.IUser;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,20 +19,20 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "usuarios")
-public class UserEntity {
+public class UserEntity implements IUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,10 +105,23 @@ public class UserEntity {
     @JoinColumn(name = "company_id")
     private CompanyEntity company;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    //@JoinTable(name = "usuarios_perfiles", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "perfil_id"))
-    @JoinColumn(name = "perfil_id")
-    private ProfileEntity profile; 
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean admin;
 
+    @JsonIgnoreProperties({"handler", "hibernateLazyInitializer"})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name="usuarios_perfiles",
+        joinColumns = {@JoinColumn(name="usuario_id")},
+        inverseJoinColumns = @JoinColumn(name="perfil_id"),
+        uniqueConstraints = { @UniqueConstraint(columnNames = {"usuario_id", "perfil_id"})}
+    )
+    private List<ProfileEntity> profiles; 
+
+
+    public UserEntity() {
+        this.profiles = new ArrayList<>();
+    }
 
 }

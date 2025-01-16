@@ -14,12 +14,16 @@ import com.microservice.auth.microservice_auth.entity.CompanyEntity;
 import com.microservice.auth.microservice_auth.entity.ProfileApplicationRoleEntity;
 import com.microservice.auth.microservice_auth.entity.ProfileEntity;
 import com.microservice.auth.microservice_auth.entity.RoleEntity;
+import com.microservice.auth.microservice_auth.entity.UserEntity;
+import com.microservice.auth.microservice_auth.entity.UserProfileEntity;
 import com.microservice.auth.microservice_auth.repository.ApplicationGroupRepository;
 import com.microservice.auth.microservice_auth.repository.ApplicationRepository;
 import com.microservice.auth.microservice_auth.repository.CompanyRepository;
 import com.microservice.auth.microservice_auth.repository.ProfileApplicationRoleRepository;
 import com.microservice.auth.microservice_auth.repository.ProfileRepository;
 import com.microservice.auth.microservice_auth.repository.RoleRepository;
+import com.microservice.auth.microservice_auth.repository.UserProfileRepository;
+import com.microservice.auth.microservice_auth.repository.UserRepository;
 
 @SpringBootApplication
 public class MicroserviceAuthApplication {
@@ -27,7 +31,7 @@ public class MicroserviceAuthApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MicroserviceAuthApplication.class, args);
 	}
-
+ 
 	@Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -58,7 +62,12 @@ public class MicroserviceAuthApplication {
 
 	@Autowired
     private ProfileApplicationRoleRepository profileApplicationRoleRepository;
+	
+	@Autowired
+    private UserRepository userRepository;
 
+	@Autowired
+    private UserProfileRepository userProfileRepository;
 	
 
 	@Bean
@@ -69,22 +78,16 @@ public class MicroserviceAuthApplication {
 			//! PERFILES
 
 			ProfileEntity profileEntity1 = ProfileEntity.builder()
-				.name("Desarrollador Junior")
+				.name("PERFIL_ADMIN")
 				.build();
 
 			profileRepository.save(profileEntity1);
 
 			ProfileEntity profileEntity2 = ProfileEntity.builder()
-				.name("Desarrollador SemiSenior")
+				.name("PERFIL_USER")
 				.build();
 
 			profileRepository.save(profileEntity2);
-
-			ProfileEntity profileEntity3 = ProfileEntity.builder()
-				.name("Desarrollador Senior")
-				.build();
-
-			profileRepository.save(profileEntity3);
 
 			
 			
@@ -191,7 +194,7 @@ public class MicroserviceAuthApplication {
 			roleRepository.save(roleEntity3);
 
 
-			//! PERFILES_APLICACIONES_ROLES
+			//!PERFILES_APLICACIONES_ROLES
 
 			ProfileApplicationRoleEntity applicationRoleEntity = ProfileApplicationRoleEntity.builder()
 				.profile(profileEntity1)
@@ -210,12 +213,48 @@ public class MicroserviceAuthApplication {
 				profileApplicationRoleRepository.save(applicationRoleEntity);
 
 				applicationRoleEntity = ProfileApplicationRoleEntity.builder()
-				.profile(profileEntity3)
+				.profile(profileEntity2)
 				.application(applicationEntity2)
 				.role(roleEntity3)
 				.build();
 
 				profileApplicationRoleRepository.save(applicationRoleEntity);
+
+			
+			//!USUARIOS 
+
+			UserEntity userEntity1 = UserEntity.builder()
+				.username("1")
+				.document("1")
+				.password("$2a$12$VfKEd56705EZC31pNWXaFeO8Y.c1PUj8Klp.sAQC4k40CIkmMcSkS")
+				.build();
+
+			userRepository.save(userEntity1);
+
+			UserEntity userEntity2 = UserEntity.builder()
+				.username("2")
+				.document("2")
+				.password("$2a$12$xOY9NZZUZHxY7TE/06WKAOAw9UqxkqTJFj0wifFztfGRfVhRiNtiK")
+				.build();
+
+			userRepository.save(userEntity2);
+
+
+            //!USUARIOS_PERFILES
+
+			UserProfileEntity userProfileEntity1 = UserProfileEntity.builder()
+				.user(userEntity1)
+				.profile(profileEntity1)
+				.build();
+
+			userProfileRepository.save(userProfileEntity1);
+
+			UserProfileEntity userProfileEntity2 = UserProfileEntity.builder()
+				.user(userEntity2)
+				.profile(profileEntity2)
+				.build();
+
+			userProfileRepository.save(userProfileEntity2);
 
 		};
 
