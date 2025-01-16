@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "roles")
-public class RoleEntity extends AuditEntity{
+@Table(name = "departamentos")
+public class DepartmentEntity extends AuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +30,7 @@ public class RoleEntity extends AuditEntity{
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_id")
-    private StateEntity state;
-
+    @JoinColumn(name = "country_id")
+    private CountryEntity country;
 
 }

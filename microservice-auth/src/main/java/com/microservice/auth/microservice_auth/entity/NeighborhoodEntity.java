@@ -19,19 +19,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "roles")
-public class RoleEntity extends AuditEntity{
+@Table(name = "barrios")
+public class NeighborhoodEntity extends AuditEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", length = 500)
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_id")
-    private StateEntity state;
-
-
+    @JoinColumn(name = "localidad_id")
+    private LocalityEntity locality;
 }

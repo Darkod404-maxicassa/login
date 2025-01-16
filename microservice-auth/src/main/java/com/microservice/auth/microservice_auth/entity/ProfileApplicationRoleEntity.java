@@ -1,6 +1,5 @@
 package com.microservice.auth.microservice_auth.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,19 +18,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "roles")
-public class RoleEntity extends AuditEntity{
+@Table(name = "perfiles_aplicaciones_roles")
+public class ProfileApplicationRoleEntity extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nombre")
-    private String name;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "perfil_id")
+    private ProfileEntity profile;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_id")
-    private StateEntity state;
+    @JoinColumn(name = "aplicacion_id")
+    private ApplicationEntity application;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rol_id")
+    private RoleEntity role;
 
 }
