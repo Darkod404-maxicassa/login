@@ -14,6 +14,7 @@ import com.microservice.auth.microservice_auth.entity.CompanyEntity;
 import com.microservice.auth.microservice_auth.entity.ProfileApplicationRoleEntity;
 import com.microservice.auth.microservice_auth.entity.ProfileEntity;
 import com.microservice.auth.microservice_auth.entity.RoleEntity;
+import com.microservice.auth.microservice_auth.entity.StateEntity;
 import com.microservice.auth.microservice_auth.entity.UserEntity;
 import com.microservice.auth.microservice_auth.entity.UserProfileEntity;
 import com.microservice.auth.microservice_auth.repository.ApplicationGroupRepository;
@@ -22,6 +23,7 @@ import com.microservice.auth.microservice_auth.repository.CompanyRepository;
 import com.microservice.auth.microservice_auth.repository.ProfileApplicationRoleRepository;
 import com.microservice.auth.microservice_auth.repository.ProfileRepository;
 import com.microservice.auth.microservice_auth.repository.RoleRepository;
+import com.microservice.auth.microservice_auth.repository.StateRepository;
 import com.microservice.auth.microservice_auth.repository.UserProfileRepository;
 import com.microservice.auth.microservice_auth.repository.UserRepository;
 
@@ -31,7 +33,7 @@ public class MicroserviceAuthApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MicroserviceAuthApplication.class, args);
 	}
- 
+
 	@Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -62,57 +64,70 @@ public class MicroserviceAuthApplication {
 
 	@Autowired
     private ProfileApplicationRoleRepository profileApplicationRoleRepository;
-	
+
 	@Autowired
     private UserRepository userRepository;
 
 	@Autowired
     private UserProfileRepository userProfileRepository;
-	
+
+	@Autowired
+    private StateRepository stateRepository;
+
 
 	@Bean
 	CommandLineRunner init(){
 
 		return args -> {
 
+			//! ESTADOS
+
+			StateEntity statusEntity1 = StateEntity.builder()
+				.name("ACTIVO")
+				.build();
+
+			stateRepository.save(statusEntity1);
+
 			//! PERFILES
 
 			ProfileEntity profileEntity1 = ProfileEntity.builder()
 				.name("PERFIL_ADMIN")
+				.state(statusEntity1)
 				.build();
 
 			profileRepository.save(profileEntity1);
 
 			ProfileEntity profileEntity2 = ProfileEntity.builder()
 				.name("PERFIL_USER")
+				.state(statusEntity1)
 				.build();
 
 			profileRepository.save(profileEntity2);
 
-			
-			
+
+
 			//! EMPRESAS
-			
+
 			CompanyEntity companyEntity = CompanyEntity.builder()
 			.name("PEGOMAX")
-				
+
 				.build();
-			
-			companyRepository.save(companyEntity);	
+
+			companyRepository.save(companyEntity);
 
 			companyEntity = CompanyEntity.builder()
 				.name("TUCASSA")
 				.build();
-			
+
 			companyRepository.save(companyEntity);
 
 			companyEntity = CompanyEntity.builder()
 				.name("MAXICASSA")
 				.build();
-			
+
 			companyRepository.save(companyEntity);
 
-			
+
 			//!  GRUPO DE APLICACIONES
 
 			ApplicationGroupEntity applicationGroupEntity = ApplicationGroupEntity.builder()
@@ -220,8 +235,8 @@ public class MicroserviceAuthApplication {
 
 				profileApplicationRoleRepository.save(applicationRoleEntity);
 
-			
-			//!USUARIOS 
+
+			//!USUARIOS
 
 			UserEntity userEntity1 = UserEntity.builder()
 				.username("1")
@@ -260,6 +275,6 @@ public class MicroserviceAuthApplication {
 
 	}
 
-	
+
 
 }

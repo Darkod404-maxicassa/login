@@ -105,7 +105,44 @@
                 </annotationProcessorPaths>
             </configuration>
         </plugin>
-    </plugins>
+
+
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<version>3.3.0</version>
+			<configuration>
+				<archive>
+					<manifest>
+						<mainClass>com.microservice.auth.microservice_auth.MicroserviceAuthApplication</mainClass>
+					</manifest>
+				</archive>
+			</configuration>
+		</plugin>
+
+		<!-- Plugin opcional para crear un JAR ejecutable "fat JAR" -->
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<version>3.4.1</version>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+					<configuration>
+						<transformers>
+							<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<mainClass>com.microservice.auth.microservice_auth.MicroserviceAuthApplication</mainClass>
+							</transformer>
+						</transformers>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+
+	</plugins>
 </build>
 
 

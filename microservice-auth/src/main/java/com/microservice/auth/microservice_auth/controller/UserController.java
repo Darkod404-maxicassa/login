@@ -29,7 +29,7 @@ import com.microservice.auth.microservice_auth.service.UserService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins={"http://10.1.0.82:2121"})
+@CrossOrigin(origins={"http://10.1.2.93:2121"})
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

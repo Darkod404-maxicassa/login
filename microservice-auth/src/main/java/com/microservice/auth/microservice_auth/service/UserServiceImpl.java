@@ -1,10 +1,5 @@
 package com.microservice.auth.microservice_auth.service;
 
-import org.springframework.stereotype.Service;
-
-import com.microservice.auth.microservice_auth.repository.ProfileRepository;
-import com.microservice.auth.microservice_auth.repository.UserRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,13 +7,17 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.microservice.auth.microservice_auth.entity.ProfileEntity;
 import com.microservice.auth.microservice_auth.entity.UserEntity;
 import com.microservice.auth.microservice_auth.entity.models.IUser;
 import com.microservice.auth.microservice_auth.entity.models.UserRequest;
+import com.microservice.auth.microservice_auth.repository.ProfileRepository;
+import com.microservice.auth.microservice_auth.repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -95,6 +94,11 @@ public class UserServiceImpl implements UserService{
             optionalRoleAdmin.ifPresent(roles::add);
         }
         return roles;
+    }
+
+    public UserEntity findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
 }
